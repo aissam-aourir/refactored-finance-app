@@ -1,0 +1,32 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Client" as client
+
+rectangle "Système Bancaire Refactoré" {
+    usecase "Créer un utilisateur" as UC1
+    usecase "Créer un compte" as UC2
+    usecase "Déposer de l'argent" as UC3
+    usecase "Retirer de l'argent" as UC4
+    usecase "Effectuer un virement" as UC5
+    usecase "Consulter le solde" as UC6
+    usecase "Voir l'historique" as UC7
+    usecase "Voir tous mes comptes" as UC8
+    usecase "S'authentifier avant opération sensible" as UC9 <<include>>
+
+    client --> UC1
+    client --> UC2
+    client --> UC3 : <<include>> UC9
+    client --> UC4 : <<include>> UC9
+    client --> UC5 : <<include>> UC9
+    client --> UC6 : <<include>> UC9
+    client --> UC7 : <<include>> UC9
+    client --> UC8 : <<include>> UC9
+}
+
+note right of UC9
+  Vérification username + mot de passe
+  avant toute opération sensible
+end note
+@enduml

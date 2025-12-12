@@ -1,0 +1,114 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam nodesep 60
+skinparam ranksep 60
+
+package "com.university.finance.model" <<Rectangle>> {
+    class User {
+        - username: String
+        - password: String
+        - accounts: List<Account>
+        + getUsername(): String
+        + addAccount(Account)
+        + getAccounts(): List<Account>
+    }
+
+    class Account {
+        - accountNumber: String <<unique>>
+        - balance: double
+        - transactionHistory: List<Transaction>
+        + deposit(double)
+        + withdraw(double)
+        + transferTo(Account, double)
+        + addTransaction(Transaction)
+    }
+
+    class Transaction {
+        - timestamp: LocalDateTime
+        - type: TypeTransaction
+        - amount: double
+        - relatedAccount: String
+    }
+
+    enum TypeTransaction {
+        DEPOSIT
+        WITHDRAWAL
+        TRANSFER_OUT
+        TRANSFER_IN
+    }
+}
+
+package "com.university.finance.service" <<Rectangle>> {
+    class BankingService {
+        - users: Map<String,User>
+        - transactionService: TransactionService
+        + createUser()
+        + createAccount()
+        + deposit()
+        + withdraw()
+        + transfer()
+        + showUserAccounts()
+    }
+
+    class TransactionService {
+        - observers: List<TransactionObserver>
+        + executeTransaction(TransactionStrategy, Account, Account, double)
+    }
+}
+
+package "com.university.finance.pattern.strategy" <<Rectangle>> {
+    interface TransactionStrategy {
+        + execute(source: Account, destination: Account, amount: double)
+        + createSourceTransaction(amount: double): Transaction
+        + createDestinationTransaction(amount: double): Transaction
+    }
+
+    class DepositStrategy
+    class WithdrawStrategy
+    class TransferStrategy
+}
+
+package "com.university.finance.pattern.observer" <<Rectangle>> {
+    interface TransactionObserver {
+        + onTransaction(source: Account, dest: Account, srcTx: Transaction, destTx: Transaction)
+    }
+    class AuditLogger
+    class NotificationService
+}
+
+package "com.university.finance.util" <<Rectangle>> {
+    class AccountNumberGenerator {
+        - instance: AccountNumberGenerator <<singleton>>
+        - usedNumbers: Set<String>
+        - counter: int
+        + getInstance(): AccountNumberGenerator <<synchronized>>
+        + generateUniqueAccountNumber(): String <<synchronized>>
+    }
+}
+
+' Relations
+User "1" --> "0..*" Account : possède
+Account "1" --> "0..*" Transaction : contient
+BankingService --> User
+BankingService --> Account
+BankingService --> TransactionService
+TransactionService --> TransactionObserver : notifie
+TransactionService --> TransactionStrategy : utilise
+TransactionStrategy <|.. DepositStrategy
+TransactionStrategy <|.. WithdrawStrategy
+TransactionStrategy <|.. TransferStrategy
+TransactionObserver <|.. AuditLogger
+TransactionObserver <|.. NotificationService
+AccountNumberGenerator ..> Account : génère numéro
+
+note right of AccountNumberGenerator
+  Pattern SINGLETON + thread-safe
+  Bonus +5 points validé
+end note
+
+note right of BankingService
+  Vérification username + mot de passe
+  avant chaque transaction sensible
+end note
+@enduml

@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  finance-app:
+    build: .
+    container_name: refactored-finance-app
+    image: refactored-finance-app:latest
+    stdin_open: true
+    tty: true
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
