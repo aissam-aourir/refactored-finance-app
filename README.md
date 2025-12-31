@@ -1,3 +1,11 @@
+**Encadré par :** Pr. Walid BOUARIFI
+**Réalisé par :**
+- AHMAMO HAMZA
+- AOURIR AISSAM
+- HMIDDOUCH ABDESSADEK
+
+---
+
 # Rapport de Refactoring du Projet Finance App
 
 ## 1. Introduction : Assurance Qualité et Problématique du Code Spaghetti
